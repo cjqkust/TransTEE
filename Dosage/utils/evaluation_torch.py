@@ -35,8 +35,14 @@ def get_model_predictions(num_treatments, test_data, model):
     t = Variable(torch.from_numpy(test_data['t']).cuda().detach()).float()
     d = Variable(torch.from_numpy(test_data['d']).cuda().detach()).float()
     I_logits = model(x, t, d)
-    return I_logits.cpu().detach().numpy()
+    
+    # Ensure output is a tuple and extract the prediction part
+    if isinstance(I_logits, tuple):
+        prediction = I_logits[1]
+    else:
+        prediction = I_logits
 
+    return prediction.cpu().detach().numpy()
 
 def get_true_dose_response_curve(news_dataset, patient, treatment_idx):
     def true_dose_response_curve(dosage):
